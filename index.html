@@ -204,12 +204,49 @@
   const $ = (sel, el=document)=>el.querySelector(sel);
   const $all = (sel, el=document)=>Array.from(el.querySelectorAll(sel));
 
+  /**
+   * @typedef {Object} KanbanState
+   * @property {string[]} todo
+   * @property {string[]} doing
+   * @property {string[]} done
+   */
+
+  /** @type {KanbanState} */
+  const defaultKanbanState = { todo: [], doing: [], done: [] };
+
+  /**
+   * Mescla dados parciais do kanban com o estado padrão, filtrando entradas inválidas.
+   * @param {Partial<KanbanState> | null | undefined} data
+   * @returns {KanbanState}
+   */
+  function normalizeKanban(data){
+    /** @type {KanbanState} */
+    const base = {
+      todo: [...defaultKanbanState.todo],
+      doing: [...defaultKanbanState.doing],
+      done: [...defaultKanbanState.done]
+    };
+    if(!data || typeof data !== "object"){
+      return base;
+    }
+    if(Array.isArray(data.todo)){
+      base.todo = data.todo.filter((item)=>typeof item === "string");
+    }
+    if(Array.isArray(data.doing)){
+      base.doing = data.doing.filter((item)=>typeof item === "string");
+    }
+    if(Array.isArray(data.done)){
+      base.done = data.done.filter((item)=>typeof item === "string");
+    }
+    return base;
+  }
+
   const state = {
     theme: localStorage.getItem("home.theme") || (matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"),
     note: localStorage.getItem("home.note") || "",
     links: JSON.parse(localStorage.getItem("home.links")||"[]"),
     snips: JSON.parse(localStorage.getItem("home.snips")||"[]"),
-    kanban: JSON.parse(localStorage.getItem("home.kanban")||'{"todo":[],"doing":[],"done":[]}'),
+    kanban: normalizeKanban(JSON.parse(localStorage.getItem("home.kanban")||'{"todo":[],"doing":[],"done":[]}')),
   };
   document.documentElement.setAttribute("data-theme", state.theme);
 
@@ -291,10 +328,17 @@
 
   // Kanban
   const cols = $all(".col");
+  /** @returns {void} */
   function renderKanban(){
     cols.forEach(col=>{
-      const key = col.dataset.col; col.querySelectorAll(".task").forEach(n=>n.remove());
-      state.kanban[key].forEach((t,idx)=>{
+      const key = col.dataset.col;
+      if(!key){
+        return;
+      }
+      const typedKey = /** @type {keyof KanbanState} */ (key);
+      col.querySelectorAll(".task").forEach(n=>n.remove());
+      const columnData = Array.isArray(state.kanban[typedKey]) ? state.kanban[typedKey] : [];
+      columnData.forEach((t,idx)=>{
         const el=document.createElement("div"); el.className="task"; el.textContent=t; el.draggable=true;
         el.addEventListener("dragstart", ev=>{ ev.dataTransfer.setData("text/plain", JSON.stringify({from:key,index:idx,txt:t})); });
         col.appendChild(el);
@@ -435,7 +479,7 @@
       if("note" in data){ state.note = data.note; noteEl.value = state.note; localStorage.setItem("home.note", state.note); }
       if(Array.isArray(data.links)){ state.links = data.links; persist("links"); renderLinks(); }
       if(Array.isArray(data.snips)){ state.snips = data.snips; persist("snips"); renderSnipSelect(); renderSnipList(); }
-      if(data.kanban){ state.kanban = data.kanban; persist("kanban"); renderKanban(); }
+      if(data.kanban){ state.kanban = normalizeKanban(data.kanban); persist("kanban"); renderKanban(); }
       if(data.quick){ htmlEl.value = data.quick.html||htmlEl.value; jsEl.value = data.quick.js||jsEl.value; runProject(); }
       alert("Importado");
     }catch(err){ alert("Falha ao importar: "+err.message); }
