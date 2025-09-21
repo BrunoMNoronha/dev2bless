@@ -1,27 +1,28 @@
 import { memo } from 'react'
+import { Link, NavLink } from 'react-router-dom'
 
 /**
  * @typedef {Object} SidebarLink
- * @property {string} icon Emoji or icon representing the action.
- * @property {string} label Visible label for the link.
- * @property {string} href Target URL for the link.
- * @property {boolean} [isActive] Flag indicating whether the link is currently active.
+ * @property {string} icon Símbolo exibido ao lado do texto.
+ * @property {string} label Rótulo amigável para a navegação.
+ * @property {string} to Caminho interno que o link aponta.
+ * @property {boolean} [end] Define se a correspondência deve ser exata.
  */
 
 /** @type {SidebarLink[]} */
 const SIDEBAR_LINKS = [
-  { icon: '🏠', label: 'Painel', href: '#', isActive: true },
-  { icon: '💳', label: 'Contribuições', href: '#' },
-  { icon: '📝', label: 'Inscrição', href: '#' },
-  { icon: '📚', label: 'Planos de estudo', href: '#' },
-  { icon: '🗂️', label: 'Pausar módulo', href: '#' },
-  { icon: '🎯', label: 'Resultados', href: '#' },
-  { icon: '🔔', label: 'Avisos', href: '#' },
-  { icon: '📅', label: 'Agenda', href: '#' }
+  { icon: '🏠', label: 'Painel', to: '/dashboard', end: true },
+  { icon: '💳', label: 'Contribuições', to: '/contribuicoes' },
+  { icon: '📝', label: 'Inscrição', to: '/inscricao' },
+  { icon: '📚', label: 'Planos de estudo', to: '/planos' },
+  { icon: '🗂️', label: 'Pausar módulo', to: '/pausar-modulo' },
+  { icon: '🎯', label: 'Resultados', to: '/resultados' },
+  { icon: '🔔', label: 'Avisos', to: '/avisos' },
+  { icon: '📅', label: 'Agenda', to: '/agenda' }
 ]
 
-/** @type {SidebarLink} */
-const LOGOUT_LINK = { icon: '🚪', label: 'Sair', href: '#' }
+/** @type {{ icon: string, label: string, to: string }} */
+const LOGOUT_LINK = { icon: '🚪', label: 'Sair', to: '/logout' }
 
 /**
  * Renderiza a barra lateral de navegação do painel.
@@ -31,28 +32,29 @@ const LOGOUT_LINK = { icon: '🚪', label: 'Sair', href: '#' }
 function SidebarComponent () {
   return (
     <aside className="sidebar">
-      <div className="brand" aria-label="Logo">
-        <svg viewBox="0 0 24 24" role="img" aria-label="cap">
+      <Link className="brand" aria-label="Ir para o painel" to="/dashboard">
+        <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
           <path d="M12 2 1 7l11 5 9-4.09V14h2V7L12 2zm-7 9.27V17c0 2.76 3.5 8 5 8 5s8-2.24 8-5v-2.73l-8 3.64-8-3.64z" />
         </svg>
-      </div>
-      <nav className="nav">
+      </Link>
+      <nav className="nav" aria-label="Navegação principal">
         {SIDEBAR_LINKS.map((link) => (
-          <a
+          <NavLink
             key={link.label}
-            className={link.isActive ? 'active' : undefined}
-            href={link.href}
+            to={link.to}
+            end={link.end}
+            className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
           >
-            <span className="icon">{link.icon}</span>
+            <span className="icon" aria-hidden="true">{link.icon}</span>
             {link.label}
-          </a>
+          </NavLink>
         ))}
       </nav>
       <div className="spacer" />
-      <a className="nav logout" href={LOGOUT_LINK.href}>
-        <span className="icon">{LOGOUT_LINK.icon}</span>
+      <Link className="nav-link logout" to={LOGOUT_LINK.to}>
+        <span className="icon" aria-hidden="true">{LOGOUT_LINK.icon}</span>
         {LOGOUT_LINK.label}
-      </a>
+      </Link>
     </aside>
   )
 }
