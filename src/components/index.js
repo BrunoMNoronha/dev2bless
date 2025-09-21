@@ -1,0 +1,7 @@
+export { default as Sidebar } from './Sidebar.jsx'
+export { default as Topbar } from './Topbar.jsx'
+export { default as Hero } from './Hero.jsx'
+export { default as FinancialCards } from './FinancialCards.jsx'
+export { default as CoursesList } from './CoursesList.jsx'
+export { default as InstructorsPanel } from './InstructorsPanel.jsx'
+export { default as NoticesPanel } from './NoticesPanel.jsx'
