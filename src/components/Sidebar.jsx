@@ -18,7 +18,8 @@ const SIDEBAR_LINKS = [
   { icon: '🗂️', label: 'Pausar módulo', to: '/pausar-modulo' },
   { icon: '🎯', label: 'Resultados', to: '/resultados' },
   { icon: '🔔', label: 'Avisos', to: '/avisos' },
-  { icon: '📅', label: 'Agenda', to: '/agenda' }
+  { icon: '📅', label: 'Agenda', to: '/agenda' },
+  { icon: '📖', label: 'Documentação', to: '/documentacao' }
 ]
 
 /** @type {{ icon: string, label: string, to: string }} */

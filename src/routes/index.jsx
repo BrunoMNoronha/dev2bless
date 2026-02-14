@@ -11,6 +11,7 @@ const ResultsPage = lazy(() => import('../pages/results/ResultsPage.jsx'))
 const NoticesPage = lazy(() => import('../pages/notices/NoticesPage.jsx'))
 const AgendaPage = lazy(() => import('../pages/agenda/AgendaPage.jsx'))
 const LogoutPage = lazy(() => import('../pages/logout/LogoutPage.jsx'))
+const DocumentationPage = lazy(() => import('../pages/documentation/DocumentationPage.jsx'))
 
 /**
  * Envolve um nó em <Suspense> aplicando um fallback padrão do painel.
@@ -41,6 +42,7 @@ export const routes = [
       { path: 'resultados', element: withSuspense(<ResultsPage />) },
       { path: 'avisos', element: withSuspense(<NoticesPage />) },
       { path: 'agenda', element: withSuspense(<AgendaPage />) },
+      { path: 'documentacao/:doc?', element: withSuspense(<DocumentationPage />) },
       { path: 'logout', element: withSuspense(<LogoutPage />) }
     ]
   },
